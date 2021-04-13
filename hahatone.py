@@ -12,7 +12,8 @@ hero = {
     'destroyer': False,
     'timekeeper': False,
     'corridor': 0,
-    'colors': False}
+    'colors': False,
+    'reality': 100}
 
 def output_text(lines):         #Печатная машинка
     for line in lines:
@@ -161,18 +162,23 @@ def corridors():
 
         else:
             error()
+def death():
+    repl(False, ['Ты почувствал как из тебя вырывают разум,',
+                'а ты распадаешься на осколки. Но это лишь начало Конца.'])
+    output_text(['Нажмите Enter для выхода'])
+    inp = input()
+    sys.exit()
 #Смерть во 2 коридоре
 def corridor_2_death():
     if hero['dark_end_count'] > 0:
         repl(False, ['Зайдя во второй коридор, Ты потерял возможность контролировать себя.',
                     '"Наконец-то ты пришел..." - прозвучало это в Твоей голове.',
                     'Тебя окутал холод и, разум оставил Тебя.'])
+        output_text(['Нажмите Enter для выхода'])
+        inp = input()
+        sys.exit()
     else:
-        repl(False, ['Зайдя во второй коридор, Ты почувствал как из тебя вырывают разум,',
-                    'а ты распадаешься на осколки.'])
-    output_text(['Нажмите Enter для выхода'])
-    inp = input()
-    sys.exit()
+        death()
 #Загадка первого коридора
 def corridor_1_colors():
     ok = False
@@ -186,16 +192,72 @@ def corridor_1_colors():
                     '"Не забывай что Тьма - это Свет. Все подвержено инверсии". Ты решаешь',
                     'начертить символы в пустых квадратах.'], ['Введи последовательность'])
         inp = str(input())
+
         if inp == 'WBR':
             repl(False, ['Символы пред тобой вспыхнули и исчезли. Призматические стены впереди',
                         'открыли тебе путь вперед. Ты идешь все дальше и дальше в Бездну Сознания...'])
             ok = True
             hero['colors'] = True
+
         elif inp == 'Exit':
             sys.exit()
+
         else:
             repl(False, ['Комбинация оказалась неверной, и то, что ты вычертил пропало, но Воля Твоя',
-                        'не дает Тебе сдаться, и ты пробуешь вновь.'])
+                        'не дает Тебе сдаться, и ты пробуешь вновь. Твоя Реальность пострадала.'])
+            hero['reality'] -= 20
+            if reality <= 0:
+                death()
+#Битва в 3 коридоре
+def corridor_3_fight():
+    ok = False
+    win = False
+    enemy_reality = 100
+    while not ok:
+        repl(False, ['Ты зашел за пелену третьего коридора и увидел пред собой астральную сущность,',
+                    'которая, только завидев тебя сразу бросилась в атаку. Своим Разумом и Волей ты',
+                    'вступаешь в бой'])
+        while not win:
+            if hero['reality'] > 0 and enemy_reality > 0:
+                repl(True, ['Реальность Часового - ', str(enemy_reality),'Реальность Сущности - ', str(hero['reality']),
+                            '\nТы стоишь напротив Часового, готовясь его атаковать.'],
+                           ['\n|1| Атаковать в лоб',
+                            '\n|2| Отвлечь и атаковать',
+                            '\n|2| Попытаться отразить атаку врага'])
+                inp = str(input())
+
+                if inp == '1':
+                    repl(False, ['Ты обменялся атаками с Часовым.'])
+                    hero['reality'] -= 20
+                    enemy_reality -= 15
+                elif inp == '2':
+                    rand = randint(0, 10)
+                    if rand > 3:
+                        repl(False, ['Ты успешно атаковал врага своей Волей.'])
+                        enemy_reality -= 10
+                    else:
+                        repl(False, ['Атака прошла неудачно и Ты повредил свой Разум'])
+                        hero['reality'] -= 10
+                elif inp == '3':
+                    rand = randint(0, 10)
+                    if rand > 7:
+                        repl(False, ['Ты успешно отразил врага своим Разумом.'])
+                        enemy_reality -= 25
+                    else:
+                            repl(False, ['Тебе не удалось отразить атаку, и Ты повредил свой разум'])
+                            hero['reality'] -= 40
+                elif inp == 'Exit':
+                    sys.exit()
+                else:
+                    error()
+            elif hero['reality'] > 0 and enemy_reality <= 0:
+                repl(False, ['Ты успешно победил Часового и, теперь ты можешь продлжить'],
+                            ['свой путь в Бездну Сознания...'])
+                win = True
+                ok = True
+            else:
+                death()
+
 #Ход сюжета
 if __name__ == "__main__":
     if enity_choose_path() == 'destroyer':
@@ -208,4 +270,4 @@ if __name__ == "__main__":
     elif hero['corridor'] == 2:
         corridor_2_death()
     elif hero['corridor'] == 3:
-        pass
+        corridor_3_fight()
