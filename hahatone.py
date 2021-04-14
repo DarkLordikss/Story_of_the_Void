@@ -206,7 +206,7 @@ def corridor_1_colors():
             repl(False, ['Комбинация оказалась неверной, и то, что ты вычертил пропало, но Воля Твоя',
                         'не дает Тебе сдаться, и ты пробуешь вновь. Твоя Реальность пострадала.'])
             hero['reality'] -= 20
-            if reality <= 0:
+            if hero['reality'] <= 0:
                 death()
 #Битва в 3 коридоре
 def corridor_3_fight():
@@ -257,6 +257,64 @@ def corridor_3_fight():
                 ok = True
             else:
                 death()
+#Концовка уничтожителя
+def destroy():
+    repl(False, ['Одним небольшим усилием Воли Ты разрушил то, что создало и',
+                 'поддерживало этото мир. И вся вина за это лишь на тебе, Сущность.',
+                 'Надеюсь, ты готов к последствиям своих действий...'])
+    output_text(['Нажмите Enter для выхода'])
+    inp = input()
+    sys.exit()
+#Неудачная концовка разрушителя
+def destroy_fault():
+    repl(False, ['Твоей Воли недостаточно чтобы разрушить столь могущественный',
+                 'артефакт. В ответ на Твою агрессию он низверг Тебя из этого мира.',
+                 'Знай же цену своих действий.'])
+    output_text(['Нажмите Enter для выхода'])
+    inp = input()
+    sys.exit()
+#Концовка улучшения
+def upgrade():
+    repl(False, ['Силой своего Разума ты запустил механизм, и он начал менять реальность',
+                 'вокруг. Мир стал приобретать большую материальность и реальность.',
+                 'Я благодарен Тебе, Хранитель.'])
+    output_text(['Нажмите Enter для выхода'])
+    inp = input()
+    sys.exit()
+#Неудачная концовка улучшения
+def upgrade_fault():
+    repl(False, ['Ты попытался запустить древний механизм, но силы Твоего разума недостаточно',
+                 'для этого. Потеряв свои последние силы и Реальность, ты пал ниц и слился м пустотой...',
+                 'Я сожалею о твоей участи, Разрушитель.'])
+    output_text(['Нажмите Enter для выхода'])
+    inp = input()
+    sys.exit()
+#Ядро
+def core():
+    ok = False
+    while not ok:
+        repl(True, ['Ты идешь по бесконечно длинному ослепляюще-белому пути. Ты чувствуешь',
+                    'близость Безны. Спустя определенное количество циклов, Ты дошел до',
+                    'небольшого ромбического устройства. Deus machina. Устройство для',
+                    'создания и уничтожения Бытия прямо пред Тобой. Сделай свой выбор.'],
+                    ['\n|1| Уничтожить Deus machina', '\n|2| Активировать Deus Machina'])
+        inp = str(input())
+        if inp == '1' and hero['destroyer'] == True:
+            destroy()
+            ok = True
+        if inp == '1' and hero['destroyer'] != True:
+            destroy_fault()
+            ok = True
+        if inp == '2' and hero['timekeeper'] == True:
+            upgrade()
+            ok = True
+        if inp == '2' and hero['timekeeper'] != True:
+            upgrade_fault()
+            ok = True
+        elif inp == 'Exit':
+            sys.exit()
+        else:
+            error()
 
 #Ход сюжета
 if __name__ == "__main__":
@@ -267,6 +325,7 @@ if __name__ == "__main__":
     corridors()
     if hero['corridor'] == 1:
         corridor_1_colors()
+        core()
     elif hero['corridor'] == 2:
         corridor_2_death()
     elif hero['corridor'] == 3:
