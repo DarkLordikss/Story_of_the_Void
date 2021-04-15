@@ -22,8 +22,7 @@ def output_text(lines):  # Печатная машинка
         for c in line:
             print(c, end='')
             sys.stdout.flush()
-            sleep(0.00)
-            # sleep(0.02)        #Нормальная скорость
+            sleep(0.01)
         print('')
 
 
