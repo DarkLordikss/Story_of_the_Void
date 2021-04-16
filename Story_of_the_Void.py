@@ -1,27 +1,26 @@
 # -*- coding: utf8 -*-
 
-from time import sleep
 import sys
 import os
+
+from time import sleep
 from random import randint
 
-inp = 0
-rand = 0
-ok = False
+
 hero = {
     'dark_end_count': 0,
     'destroyer': False,
     'timekeeper': False,
     'corridor': 0,
     'colors': False,
-    'reality': 100}
+    'reality': 100
+}
 
 
 def output_text(lines):  # Печатная машинка
     for line in lines:
         for c in line:
-            print(c, end='')
-            sys.stdout.flush()
+            print(c, end='', flush=True)
             sleep(0.01)
         print('')
 
@@ -37,11 +36,31 @@ def repl(need_ans, text, ans=None):
 
 
 def error():
-    output_text(['Кажется, вы ошиблись^-^\n'])
+    output_text(['Кажется, вы ошиблись ^-^\n'])
+
+
+def await_for_exit():
+    output_text(['Нажмите любую клавишу для выхода'])
+    inp = input()
+    sys.exit()
+
+
+def get_input():
+    inp = str(input()).strip()
+    while not inp:
+        inp = str(input()).strip()
+
+    return inp
+
+
+def handle_common_input(inp):
+    if inp == 'Exit':
+        sys.exit()
+    else:
+        error()
+
 
 # Выбор пути
-
-
 def enity_choose_path():
     ok = False
     while not ok:
@@ -51,8 +70,8 @@ def enity_choose_path():
                     'Даже время потеряло здесь свой ход… Пред Тобой являются два символа: Меч и Часы.',
                     'Вокруг по-прежнему ничего нет, но теперь ты можешь хотя бы ощущать свое тело.'],
              ['\n|1| Выбрать Меч', '\n|2| Выбрать Часы'])
-        inp = str(input())
 
+        inp = get_input()
         if inp == '1':
             repl(False, ['\nТы коснулся символа Меча и он тут же пропал.'])
             ok = True
@@ -63,14 +82,11 @@ def enity_choose_path():
                 ['\nТы коснулся символа Часов и он тут же пропал. Твои глаза озарила яркая вспышка...'])
             ok = True
             hero['timekeeper'] = True
-        elif inp == 'Exit':
-            sys.exit()
         else:
-            error()
+            handle_common_input(inp)
+
 
 # Руны для разрушителя
-
-
 def destroyer_and_runes():
     ok = False
     while not ok:
@@ -82,7 +98,7 @@ def destroyer_and_runes():
               'За Тобой оказалось что-то напоминающее руны. Подойдя к рунам, ты разглядываешь их.'],
              ['\n|1| Изучить руны внимательнее',
               '\n|2| Разбить руны'])
-        inp = str(input())
+        inp = get_input()
         rand = randint(0, 12)
 
         if inp == '1' and rand != 4:
@@ -104,15 +120,11 @@ def destroyer_and_runes():
                   'За преградой оказался проход, ведущий к развилке'])
             ok = True
 
-        elif inp == 'Exit':
-            sys.exit()
-
         else:
-            error()
+            handle_common_input(inp)
+
 
 # Руны для хранителя
-
-
 def timekeeper_and_runes():
     ok = False
     while not ok:
@@ -124,7 +136,7 @@ def timekeeper_and_runes():
               'За Тобой оказалось что-то напоминающее руны. Подойдя к рунам, ты разглядываешь их.'],
              ['\n|1| Изучить руны внимательнее',
               '\n|2| Разбить руны'])
-        inp = str(input())
+        inp = get_input()
         rand = randint(0, 12)
 
         if inp == '1':
@@ -148,15 +160,10 @@ def timekeeper_and_runes():
                  ['Ты собрал всю мощь Твоей воли, но этого оказалось недостаточно.',
                   'Руны даже не откликнулись на попытку атаковать их.'])
 
-        elif inp == 'Exit':
-            sys.exit()
-
         else:
-            error()
+            handle_common_input(inp)
 
 # Коридоры
-
-
 def corridors():
     ok = False
     while not ok:
@@ -166,7 +173,7 @@ def corridors():
               'металлический скрежет, во втором царит абсолютная тишина, и оттуда веет прохладой,',
               'а из третьего слышится тихое щелканье и стук.'],
              ['\n|1| Выбрать первый коридор, \n|2| Выбрать второй коридор, \n|3| Выбрать третий коридор,'])
-        inp = str(input())
+        inp = get_input()
 
         if inp == '1':
             repl(False, ['Вы вошли в первый коридор.'])
@@ -180,36 +187,28 @@ def corridors():
             repl(False, ['Вы вошли в третий коридор.'])
             hero['corridor'] = 3
             ok = True
-        elif inp == 'Exit':
-            sys.exit()
-
         else:
-            error()
+            handle_common_input(inp)
 
 
 def death():
     repl(False, ['Ты почувствал как из тебя вырывают разум,',
                  'а Ты распадаешься на осколки. Но это лишь начало Конца.'])
-    output_text(['Нажмите Enter для выхода'])
-    inp = input()
-    sys.exit()
+    await_for_exit()
+
+
 # Смерть во 2 коридоре
-
-
 def corridor_2_death():
     if hero['dark_end_count'] > 0:
         repl(False,
              ['Зайдя во второй коридор, Ты потерял возможность контролировать себя.',
               '"Наконец-то ты пришел..." - прозвучало это в Твоей голове.',
               'Тебя окутал холод и, разум оставил Тебя.'])
-        output_text(['Нажмите Enter для выхода'])
-        inp = input()
-        sys.exit()
+        await_for_exit()
     else:
         death()
+
 # Загадка первого коридора
-
-
 def corridor_1_colors():
     ok = False
     while not ok:
@@ -223,9 +222,9 @@ def corridor_1_colors():
               '"Не забывай что Тьма - это Свет. Все подвержено инверсии". Ты решаешь',
               'начертить символы в пустых квадратах.'],
              ['Введи последовательность'])
-        inp = str(input())
+        inp = get_input()
 
-        if inp == 'WBR':
+        if inp.replace(' ', '') == 'WBR':
             repl(False, ['Символы пред тобой вспыхнули и исчезли. Призматические стены впереди',
                          'открыли тебе путь вперед. Ты идешь все дальше и дальше в Бездну Сознания...'])
             ok = True
@@ -242,9 +241,8 @@ def corridor_1_colors():
             if hero['reality'] <= 0:
                 death()
 
+
 # Битва в 3 коридоре
-
-
 def corridor_3_fight():
     ok = False
     win = False
@@ -264,8 +262,8 @@ def corridor_3_fight():
                          '\nТы стоишь напротив Часового, готовясь его атаковать.'],
                      ['\n|1| Атаковать в лоб',
                          '\n|2| Отвлечь и атаковать',
-                         '\n|2| Попытаться отразить атаку врага'])
-                inp = str(input())
+                         '\n|3| Попытаться отразить атаку врага'])
+                inp = str(input()).strip()
 
                 if inp == '1':
                     repl(False, ['Ты обменялся атаками с Часовым.'])
@@ -273,7 +271,7 @@ def corridor_3_fight():
                     enemy_reality -= 15
                 elif inp == '2':
                     rand = randint(0, 10)
-                    if rand > 3:
+                    if rand > 2:
                         repl(False, ['Ты успешно атаковал врага своей Волей.'])
                         enemy_reality -= 10
                     else:
@@ -290,10 +288,8 @@ def corridor_3_fight():
                         repl(
                             False, ['Тебе не удалось отразить атаку, и Ты повредил свой разум'])
                         hero['reality'] -= 40
-                elif inp == 'Exit':
-                    sys.exit()
                 else:
-                    error()
+                    handle_common_input(inp)
             elif hero['reality'] > 0 and enemy_reality <= 0:
                 repl(
                     False,
@@ -304,53 +300,44 @@ def corridor_3_fight():
             else:
                 death()
 
+
 # Концовка уничтожителя
-
-
 def destroy():
     repl(False,
          ['Одним небольшим усилием Воли Ты разрушил то, что создало и',
           'поддерживало этото мир. И вся вина за это лишь на тебе, Сущность.',
           'Надеюсь, ты готов к последствиям своих действий...'])
-    output_text(['Нажмите Enter для выхода'])
-    inp = input()
-    sys.exit()
+    await_for_exit()
+
+
 # Неудачная концовка разрушителя
-
-
 def destroy_fault():
     repl(False,
          ['Твоей Воли недостаточно чтобы разрушить столь могущественный',
           'артефакт. В ответ на Твою агрессию он низверг Тебя из этого мира.',
           'Знай же цену своих действий.'])
-    output_text(['Нажмите Enter для выхода'])
-    inp = input()
-    sys.exit()
+    await_for_exit()
+
+
 # Концовка улучшения
-
-
 def upgrade():
     repl(False,
          ['Силой своего Разума ты запустил механизм, и он начал менять реальность',
           'вокруг. Мир стал приобретать большую материальность и реальность. Ты вернул Первый План.',
           'Я благодарен Тебе, Хранитель.'])
-    output_text(['Нажмите Enter для выхода'])
-    inp = input()
-    sys.exit()
+    await_for_exit()
+
+
 # Неудачная концовка улучшения
-
-
 def upgrade_fault():
     repl(False,
          ['Ты попытался запустить древний механизм, но силы Твоего разума недостаточно',
           'для этого. Потеряв свои последние силы и Реальность, ты пал ниц и слился c пустотой...',
           'Я сожалею о твоей участи, Разрушитель.'])
-    output_text(['Нажмите Enter для выхода'])
-    inp = input()
-    sys.exit()
+    await_for_exit()
+
+
 # Ядро
-
-
 def core():
     ok = False
     while not ok:
@@ -361,7 +348,8 @@ def core():
               'создания и уничтожения Бытия прямо пред Тобой. Сделай свой выбор.'],
              ['\n|1| Уничтожить Deus machina',
               '\n|2| Активировать Deus Machina'])
-        inp = str(input())
+
+        inp = get_input()
         if inp == '1' and hero['destroyer']:
             destroy()
             ok = True
@@ -374,55 +362,45 @@ def core():
         if inp == '2' and hero['timekeeper'] != True:
             upgrade_fault()
             ok = True
-        elif inp == 'Exit':
-            sys.exit()
         else:
-            error()
+            handle_common_input(inp)
+
+
 # Долг уничтожителя
-
-
 def fate_destroy_yes():
     repl(False,
          ['Голос в голове открыл Тебе немыслимую истину о сущности этого мира.',
           'Узнав правду, Ты решаешь уничтожить Второй План. И молот около тебя',
           'лишь укрепляет Твою решимость. Пустота вокруг тебя рассеялась.'])
-    output_text(['Нажмите Enter для выхода'])
-    inp = input()
-    sys.exit()
+    await_for_exit()
+
+
 # Долг хранителя
-
-
 def fate_timekeep_yes():
     repl(False,
          ['Голос открыл Тебя тайны этого мира. Ты осознал необходимость защиты',
           'Второго Плана от некого Уничтожителя. И глефа неподалеку давала Тебе',
           'придавала тебе уверенности в этом. Бездна вокруг тебя пала.'])
-    output_text(['Нажмите Enter для выхода'])
-    inp = input()
-    sys.exit()
+    await_for_exit()
+
+
 # Отрицание Уничтожителя
-
-
 def fate_destroy_no():
     repl(False,
          ['"Я в тебя разочарован" - ответил Голос. Ты навеки остался узником',
           'этого измерения. Но все же Ты не поддался ему. Я горжусь Тобой.'])
-    output_text(['Нажмите Enter для выхода'])
-    inp = input()
-    sys.exit()
+    await_for_exit()
+
+
 # Отрицание хранителя
-
-
 def fate_timekeep_no():
     repl(False,
          ['В ответ не последовало ничего. Лишь тихий смех на границе сознания',
           'давал понять Тебе, что ты еще жив. На веки ты скован пустотой...'])
-    output_text(['Нажмите Enter для выхода'])
-    inp = input()
-    sys.exit()
+    await_for_exit()
+
+
 # Судьба
-
-
 def fate():
     ok = False
     while not ok:
@@ -431,7 +409,7 @@ def fate():
               'как и ранее. Голос в Твоей голове спросил: "Ты примешь свою судьбу?"'],
              ['\n|1| Да',
               '\n|2| Нет'])
-        inp = str(input())
+        inp = get_input()
         if inp == '1' and hero['destroyer']:
             fate_destroy_yes()
         elif inp == '1' and hero['timekeeper']:
@@ -446,10 +424,8 @@ def fate():
         elif inp == '2' and hero['destroyer'] and hero['dark_end_count'] < 1:
             death()
             ok = True
-        elif inp == 'Exit':
-            sys.exit()
         else:
-            error()
+            handle_common_input(inp)
 
 
 # Ход сюжета
